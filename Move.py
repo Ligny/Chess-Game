@@ -1,24 +1,18 @@
+from Selection import Selection
 
 from array import array
 
-class Selection:
-  def __init__(self, x: int, y: int) -> None:
-    self._x = x
-    self._y = y
-    self._isCorrect = False
-
-  def verifySelection(self) -> bool:
-    print("toto")
-    if self._isCorrect == False and self._x >= 0 and self._x <= 7 and self._y >= 0 and self._y <= 7:
-      self._isCorrect = True
-    return self._isCorrect
-
-
 class Move:
   def __init__(self) -> None:
-    self._moveLog = []
+    self._moveLog: array[array[Selection, Selection]] = []
     self._currentMove: array[Selection] = []
 
   def regularMove(self) -> bool:
     # check if the move is regular
-    return False
+    return True
+
+  def makeMove(self, map) -> None:
+    self._moveLog.append(tuple([self._currentMove[0], self._currentMove[1]]))
+    map[self._currentMove[1]._y][self._currentMove[1]._x] = map[self._currentMove[0]._y][self._currentMove[0]._x]
+    map[self._currentMove[0]._y][self._currentMove[0]._x] = "--"
+    self._currentMove = []
