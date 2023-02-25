@@ -29,11 +29,11 @@ class Board:
       self.images[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (self._square_size, self._square_size))
 
   def drawBoard(self, screen: p.Surface) -> None:
-    global colors_list
-    colors_list = [p.Color(235,236,208,255), p.Color(119,149,86,255)]
+    global colors
+    colors = [p.Color(235,236,208,255), p.Color(119,149,86,255)]
     for row in range(self._dimension):
       for column in range(self._dimension):
-        color = colors_list[((row + column) % 2)]
+        color = colors[((row + column) % 2)]
         p.draw.rect(screen, color, p.Rect(column * self._square_size, row * self._square_size, self._square_size, self._square_size))
 
   def drawPieces(self, screen: p.Surface) -> None:
@@ -50,4 +50,21 @@ class Board:
       s.set_alpha(100)
       s.fill(p.Color('green'))
       screen.blit(s, (last_move[1]._x * self._square_size, last_move[1]._y * self._square_size))
+
+  def drawAnimateMove(self, screen: p.Surface, move, clock) -> None:
+    global colors
+    d_col = move[1]._x - move[0]._x
+    d_row = move[1]._y - move[0]._y
+    frames_per_square = 10
+    frame_count = (abs(d_row) + abs(d_col)) * frames_per_square
+    for frame in range(frame_count + 1):
+      row, col = (move[0]._y + d_row * frame / frame_count, move[0]._x + d_col * frame / frame_count)
+      self.drawBoard(screen)
+      self.drawPieces(screen)
+      color = colors[(move[1]._x + move[1]._y) % 2]
+      end_square = p.Rect(move[1]._x * self._square_size, move[1]._y * self._square_size, self._square_size, self._square_size)
+      p.draw.rect(screen, color, end_square)
+      screen.blit(self.images[move[0]._caseSelected], p.Rect(col * self._square_size, row * self._square_size, self._square_size, self._square_size))
+      p.display.flip()
+      clock.tick(60)
 
