@@ -27,6 +27,8 @@ class Game:
     self._gameState = GameState.BASIC
     self._move: Move = Move()
 
+    self.animateMove = False
+
   def drawElements(self):
     self.board.drawBoard(self.screen)
     self.board.drawHighlight(self.screen, self._move._moveLog)
@@ -38,7 +40,7 @@ class Game:
 
   def updateStateInputCheck(self):
     id_move = self._move._currentMove.__len__() - 1
-    if self._gameState == GameState.SELECT_PIECE and not self._move._currentMove[id_move - 1].verifySelection(self._isWhiteTurn, self.board._map):
+    if self._gameState == GameState.SELECT_PIECE and not self._move._currentMove[id_move - 1].verifySelection(self._isWhiteTurn):
       self._move._currentMove = []
       self._gameState = GameState.BASIC
     elif self._gameState == GameState.MOVE and not self._move.regularMove():
@@ -48,7 +50,10 @@ class Game:
     
   def updateMove(self):
     if self._gameState == GameState.MOVE:
-      self._move.makeMove(self.board._map)
+      self._move._moveLog.append(tuple([self._move._currentMove[0], self._move._currentMove[1]]))
+      self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
+      self.board.drawAnimateMove(self.screen, self._move._currentMove, self.clock)
+      self.board._map[self._move._currentMove[1]._y][self._move._currentMove[1]._x] = self._move._currentMove[0]._caseSelected
       self._move._currentMove = []
       self._isWhiteTurn = not self._isWhiteTurn
       self._gameState = GameState.BASIC
@@ -62,7 +67,8 @@ class Game:
         self._move._currentMove.append(
           Selection(
             p.mouse.get_pos()[0] // self.board._square_size,
-            p.mouse.get_pos()[1] // self.board._square_size
+            p.mouse.get_pos()[1] // self.board._square_size,
+            self.board._map[p.mouse.get_pos()[1] // self.board._square_size][p.mouse.get_pos()[0] // self.board._square_size]
           )
         )
         if self._gameState == GameState.BASIC:
