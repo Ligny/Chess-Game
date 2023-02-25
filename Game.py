@@ -1,5 +1,8 @@
-from Board import *
-from Move import *
+import pygame as p
+
+from Board import Board
+from Move import Move
+from Selection import Selection
 
 from enum import Enum
 
@@ -26,25 +29,26 @@ class Game:
 
   def drawElements(self):
     self.board.drawBoard(self.screen)
+    self.board.drawHighlight(self.screen, self._move._moveLog)
     self.board.drawPieces(self.screen)
 
-  def quit(self):
+  def updateQuit(self):
     if self._gameState == GameState.QUIT:
       self._running = False
 
-  def checkSelection(self):
+  def updateStateInputCheck(self):
     id_move = self._move._currentMove.__len__() - 1
-    print(self._gameState)
-    if self._gameState == GameState.SELECT_PIECE and not self._move._currentMove[id_move - 1].verifySelection():
-      print("bad selection")
+    if self._gameState == GameState.SELECT_PIECE and not self._move._currentMove[id_move - 1].verifySelection(self._isWhiteTurn, self.board._map):
+      self._move._currentMove = []
       self._gameState = GameState.BASIC
-    elif self._gameState == GameState.MOVE and not self._move._currentMove[id_move].verifySelection() and not self._move.regularMove():
+    elif self._gameState == GameState.MOVE and not self._move.regularMove():
       self._gameState = GameState.SELECT_PIECE
+      self._move._currentMove.pop()
 
     
-  def makeMove(self):
+  def updateMove(self):
     if self._gameState == GameState.MOVE:
-      self._move._moveLog.append(self._move._currentMove)
+      self._move.makeMove(self.board._map)
       self._move._currentMove = []
       self._isWhiteTurn = not self._isWhiteTurn
       self._gameState = GameState.BASIC
@@ -55,11 +59,10 @@ class Game:
       if event.type == p.QUIT:
         self._gameState = GameState.QUIT
       if event.type == p.MOUSEBUTTONDOWN:
-        print("pressdown")
         self._move._currentMove.append(
           Selection(
-            p.mouse.get_pos()[1] // self.board._square_size,
-            p.mouse.get_pos()[0] // self.board._square_size
+            p.mouse.get_pos()[0] // self.board._square_size,
+            p.mouse.get_pos()[1] // self.board._square_size
           )
         )
         if self._gameState == GameState.BASIC:
@@ -68,9 +71,9 @@ class Game:
           self._gameState = GameState.MOVE
 
   def update(self):
-    self.quit()
-    self.checkSelection()
-    self.makeMove()
+    self.updateQuit()
+    self.updateStateInputCheck()
+    self.updateMove()
 
 
   def gameLoop(self):
