@@ -1,5 +1,9 @@
 import pygame as p
 
+from Selection import Selection
+
+from array import array
+
 class Board:
   def __init__(self, width: int, height: int) -> None:
     self._map = [
@@ -38,4 +42,12 @@ class Board:
         piece = self._map[row][column]
         if piece != "--":
           screen.blit(self.images[piece], p.Rect(column * self._square_size, row * self._square_size, self._square_size, self._square_size))
+
+  def drawHighlight(self, screen: p.Surface, move_log) -> None:
+    if move_log.__len__() > 0:
+      last_move = move_log[-1]
+      s = p.Surface((self._square_size, self._square_size))
+      s.set_alpha(100)
+      s.fill(p.Color('green'))
+      screen.blit(s, (last_move[1]._x * self._square_size, last_move[1]._y * self._square_size))
 
