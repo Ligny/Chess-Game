@@ -15,4 +15,3 @@ class Move:
     self._moveLog.append(tuple([self._currentMove[0], self._currentMove[1]]))
     map[self._currentMove[1]._y][self._currentMove[1]._x] = map[self._currentMove[0]._y][self._currentMove[0]._x]
     map[self._currentMove[0]._y][self._currentMove[0]._x] = "--"
-    self._currentMove = []
