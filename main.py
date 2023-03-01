@@ -1,6 +1,6 @@
 import sys
 
-from Game import Game
+from Components.Game import Game
 
 def main():
   try:
