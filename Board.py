@@ -43,13 +43,25 @@ class Board:
         if piece != "--":
           screen.blit(self.images[piece], p.Rect(column * self._square_size, row * self._square_size, self._square_size, self._square_size))
 
-  def drawHighlight(self, screen: p.Surface, move_log) -> None:
+  def drawHighlightLastMove(self, screen: p.Surface, move_log) -> None:
     if move_log.__len__() > 0:
       last_move = move_log[-1]
       s = p.Surface((self._square_size, self._square_size))
       s.set_alpha(100)
       s.fill(p.Color('green'))
       screen.blit(s, (last_move[1]._x * self._square_size, last_move[1]._y * self._square_size))
+
+  def drawHighlightValidMoves(self, screen: p.Surface, actual_move: Selection, move_list) -> None:
+    s = p.Surface((self._square_size, self._square_size))
+    s.set_alpha(100)
+    s.fill(p.Color('blue'))
+    screen.blit(s, (actual_move._x * self._square_size, actual_move._y * self._square_size))
+    # draw valid moves
+    for move in move_list:
+      s = p.Surface((self._square_size, self._square_size))
+      s.set_alpha(100)
+      s.fill(p.Color('yellow'))
+      screen.blit(s, (move._x * self._square_size, move._y * self._square_size))
 
   def drawAnimateMove(self, screen: p.Surface, move, clock) -> None:
     global colors
@@ -67,4 +79,3 @@ class Board:
       screen.blit(self.images[move[0]._caseSelected], p.Rect(col * self._square_size, row * self._square_size, self._square_size, self._square_size))
       p.display.flip()
       clock.tick(60)
-
