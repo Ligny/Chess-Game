@@ -40,15 +40,21 @@ class Move:
 
   def pawnMove(self, board_map):
     actual_pawn_move: array[Selection] = []
+    x = self._currentMove[0]._x
+    y = self._currentMove[0]._y
+    def isFreeCase(y, x):
+      return board_map[y][x] == "--"
     # basic pawn move
     if self._currentMove[0]._caseSelected[0] == "w":
-      if self._currentMove[0]._y == 6:
-        actual_pawn_move.append(Selection(self._currentMove[0]._x, self._currentMove[0]._y - 1, '--'))
-      actual_pawn_move.append(Selection(self._currentMove[0]._x, self._currentMove[0]._y - 2, '--'))
+      # first double move White
+      if self._currentMove[0]._y == 6 and isFreeCase(self._currentMove[0]._y -2, self._currentMove[0]._x):
+        actual_pawn_move.append(Selection(self._currentMove[0]._x, self._currentMove[0]._y - 2, '--'))
+      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, -1, 1, board_map)
     else:
+      # first double move Black
       if self._currentMove[0]._y == 1:
         actual_pawn_move.append(Selection(self._currentMove[0]._x, self._currentMove[0]._y + 2, '--'))
-      actual_pawn_move.append(Selection(self._currentMove[0]._x, self._currentMove[0]._y + 1, '--'))
+      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, 1, 1, board_map)
     return actual_pawn_move
 
 
@@ -56,7 +62,7 @@ class Move:
     # basic rook move
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
-      
+
     actual_rook_move = self.checkAroundEachEachDirection(x, y, 1, 0, -1, board_map) +\
     self.checkAroundEachEachDirection(x, y, 0, 1, -1, board_map) +\
     self.checkAroundEachEachDirection(x, y, -1, 0, -1, board_map) +\
