@@ -25,14 +25,29 @@ class Move:
   def checkAroundEachEachDirection(self, x, y, x_offset, y_offset, times, board_map):
     actual_move: array[Selection] = []
     i = 0
+    check_piece = 0
+
+    def set_selected_compare() -> int:
+      if board_map[y + y_offset][x + x_offset] == "--":
+        return 0
+      elif board_map[y + y_offset][x + x_offset][0] != board_map[self._currentMove[0]._y][self._currentMove[0]._x][0] and board_map[y + y_offset][x + x_offset] != "--":
+        return 1
+      else:
+        return 2
+
     while i != times:
-      if x + x_offset < 8 and x + x_offset >= 0 and y + y_offset < 8 and y + y_offset >= 0 and board_map[y + y_offset][x + x_offset] == "--":
-        actual_move.append(Selection(x + x_offset, y + y_offset, '--'))
+      if x + x_offset < 8 and x + x_offset >= 0 and y + y_offset < 8 and y + y_offset >= 0:
+        check_piece = set_selected_compare()
+        if check_piece == 0 or check_piece == 1:
+          actual_move.append(Selection(x + x_offset, y + y_offset, '--'))
+        if check_piece == 1 or check_piece == 2:
+          break
         x += x_offset
         y += y_offset
         i += 1
       else:
         break
+
     return actual_move
 
   def regularMove(self, board_map):
@@ -42,24 +57,22 @@ class Move:
     actual_pawn_move: array[Selection] = []
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
-    def isFreeCase(y, x):
-      return board_map[y][x] == "--"
-    # basic pawn move
+
     if self._currentMove[0]._caseSelected[0] == "w":
-      # first double move White
-      if self._currentMove[0]._y == 6 and isFreeCase(self._currentMove[0]._y -2, self._currentMove[0]._x):
-        actual_pawn_move.append(Selection(self._currentMove[0]._x, self._currentMove[0]._y - 2, '--'))
+      if self._currentMove[0]._y == 6:
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, -2, 1, board_map)
+      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 1, -1, 1, board_map)
+      actual_pawn_move += self.checkAroundEachEachDirection(x, y, -1, -1, 1, board_map)
       actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, -1, 1, board_map)
     else:
-      # first double move Black
       if self._currentMove[0]._y == 1:
-        actual_pawn_move.append(Selection(self._currentMove[0]._x, self._currentMove[0]._y + 2, '--'))
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, +2, 1, board_map)
+      actual_pawn_move += self.checkAroundEachEachDirection(x, y, -1, 1, 1, board_map)
+      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 1, 1, 1, board_map)
       actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, 1, 1, board_map)
     return actual_pawn_move
 
-
   def rookMove(self, board_map):
-    # basic rook move
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
 
@@ -70,7 +83,6 @@ class Move:
     return actual_rook_move
 
   def bishopMove(self, board_map):
-    # basic bishop move
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
 
@@ -82,13 +94,12 @@ class Move:
     
 
   def knightMove(self, board_map):
-    # basic knight move
     actual_knight_move: array[Selection] = []
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
 
     def checkKnightMove(x, y):
-      if x >= 0 and x < 8 and y >= 0 and y < 8 and board_map[y][x] == "--":
+      if x >= 0 and x < 8 and y >= 0 and y < 8 and (board_map[y][x] == "--" or board_map[y][x][0] != board_map[self._currentMove[0]._y][self._currentMove[0]._x][0]):
         actual_knight_move.append(Selection(x, y, '--'))
 
     checkKnightMove(x + 1, y + 2)

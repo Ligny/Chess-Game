@@ -62,7 +62,8 @@ class Game:
     
   def updateMove(self):
     if self._gameState == GameState.SELECT_PIECE:
-      self._move.regularMove(self.board._map)
+      if self._move._possibleMove.__len__() == 0:
+        self._move.regularMove(self.board._map)
       self.board.drawHighlightValidMoves(self.screen, self._move._currentMove[0], self._move._possibleMove)
     if self._gameState == GameState.MOVE:
       self._move._moveLog.append(tuple([self._move._currentMove[0], self._move._currentMove[1]]))
