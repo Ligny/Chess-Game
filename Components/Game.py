@@ -11,13 +11,14 @@ class GameState(Enum):
   BASIC = 1
   SELECT_PIECE = 2
   MOVE = 3
-
+  UNDO_MOVE = 4
 
 class Game:
   def __init__(self, width, height) -> None:
     # pygame init
     p.init()
-    self.screen: p.Surface = p.display.set_mode((width, height))
+    self.screen: p.Surface = p.display.set_mode((width + 250, height))
+    self.font = p.font.SysFont("Arial", 14, False, False)
     self.clock = p.time.Clock()
 
     # game init
@@ -30,12 +31,23 @@ class Game:
 
   def drawElements(self):
     self.board.drawBoard(self.screen)
+    self.board.drawMoveLog(self.screen, self._move._moveLog, self.font)
     self.board.drawHighlightLastMove(self.screen, self._move._moveLog)
     self.board.drawPieces(self.screen)
 
   def updateQuit(self):
     if self._gameState == GameState.QUIT:
       self._running = False
+
+  def updateUndoMove(self):
+    if self._gameState == GameState.UNDO_MOVE and self._move._moveLog.__len__() > 0:
+      self._move._currentMove = []
+      self._move._possibleMove = []
+      self.board._map[self._move._moveLog[-1][0]._y][self._move._moveLog[-1][0]._x] = self._move._moveLog[-1][0]._caseSelected
+      self.board._map[self._move._moveLog[-1][1]._y][self._move._moveLog[-1][1]._x] = "--"
+      self._move._moveLog.pop()
+      self._isWhiteTurn = not self._isWhiteTurn
+      self._gameState = GameState.BASIC
 
   def updateStateInputCheck(self):
     id_move = self._move._currentMove.__len__() - 1
@@ -47,7 +59,6 @@ class Game:
       self._gameState = GameState.BASIC
       self._move._currentMove = []
       self._move._possibleMove = []
-
     
   def updateMove(self):
     if self._gameState == GameState.SELECT_PIECE:
@@ -63,11 +74,12 @@ class Game:
       self._isWhiteTurn = not self._isWhiteTurn
       self._gameState = GameState.BASIC
 
-
   def eventHandler(self):
     for event in p.event.get():
       if event.type == p.QUIT:
         self._gameState = GameState.QUIT
+      if event.type == p.KEYDOWN and event.key == p.K_u:
+        self._gameState = GameState.UNDO_MOVE
       if event.type == p.MOUSEBUTTONDOWN:
         self._move._currentMove.append(
           Selection(
@@ -83,9 +95,9 @@ class Game:
 
   def update(self):
     self.updateQuit()
+    self.updateUndoMove()
     self.updateStateInputCheck()
     self.updateMove()
-
 
   def gameLoop(self):
     while self._running:

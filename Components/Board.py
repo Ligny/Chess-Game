@@ -4,6 +4,9 @@ from Components.Selection import Selection
 
 from array import array
 
+def notation(x: int, y: int) -> str:
+  return chr(x + 97) + str(8 - y)
+
 class Board:
   def __init__(self, width: int, height: int) -> None:
     self._map = [
@@ -20,6 +23,7 @@ class Board:
     self._height: int = height
     self._dimension: int = self._map.__len__()
     self._square_size: int = self._height // self._dimension
+    self.move_log_text: array[str] = []
     self.loadImages()
 
   def loadImages(self) -> None:
@@ -35,6 +39,32 @@ class Board:
       for column in range(self._dimension):
         color = colors[((row + column) % 2)]
         p.draw.rect(screen, color, p.Rect(column * self._square_size, row * self._square_size, self._square_size, self._square_size))
+  
+  def drawMoveLog(self, screen: p.Surface, move_log, font) -> None:
+    move_log_rect = p.Rect(self._width, 0, self._square_size, self._square_size)
+    p.draw.rect(screen, p.Color('black'), move_log_rect)
+
+    def add_new_move_log_text():
+      for i in range(len(self.move_log_text), len(move_log)):
+        move_string = str(i + 1) + '. ' + str(notation(move_log[i][1]._x, move_log[i][1]._y)) + " "
+        if i + 1 < len(move_log):
+            move_string += "  "
+        self.move_log_text.append(move_string)
+
+    def draw_all_move_log(move_per_row: int, padding: int, line_spacing: int):
+      text_y = padding
+      for i in range(0, len(self.move_log_text), move_per_row):
+        text = ""
+        for j in range(move_per_row):
+          if i + j < len(self.move_log_text):
+            text += self.move_log_text[i + j]
+        text_object = font.render(text, True, p.Color('white'))
+        text_location = move_log_rect.move(padding, text_y)
+        screen.blit(text_object, text_location)
+        text_y += text_object.get_height() + line_spacing
+
+    add_new_move_log_text()
+    draw_all_move_log(4, 5, 2)
 
   def drawPieces(self, screen: p.Surface) -> None:
     for row in range(self._dimension):
@@ -79,3 +109,4 @@ class Board:
       screen.blit(self.images[move[0]._caseSelected], p.Rect(col * self._square_size, row * self._square_size, self._square_size, self._square_size))
       p.display.flip()
       clock.tick(60)
+
