@@ -53,6 +53,7 @@ class Move:
   def regularMove(self, board_map):
     self._possibleMove = self._arrayPointer[self._currentMove[0]._caseSelected[1]](board_map)
 
+
   def pawnMove(self, board_map):
     actual_pawn_move: array[Selection] = []
     x = self._currentMove[0]._x
@@ -61,15 +62,21 @@ class Move:
     if self._currentMove[0]._caseSelected[0] == "w":
       if self._currentMove[0]._y == 6:
         actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, -2, 1, board_map)
-      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 1, -1, 1, board_map)
-      actual_pawn_move += self.checkAroundEachEachDirection(x, y, -1, -1, 1, board_map)
-      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, -1, 1, board_map)
+      if board_map[y - 1][x] == "--":
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, -1, 1, board_map)
+      if board_map[y - 1][x + 1][0] == 'b':
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, 1, -1, 1, board_map)
+      if board_map[y - 1][x - 1][0] == 'b':
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, -1, -1, 1, board_map)
     else:
       if self._currentMove[0]._y == 1:
         actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, +2, 1, board_map)
-      actual_pawn_move += self.checkAroundEachEachDirection(x, y, -1, 1, 1, board_map)
-      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 1, 1, 1, board_map)
-      actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, 1, 1, board_map)
+      if board_map[y + 1][x] == "--":
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, 1, 1, board_map)
+      if board_map[y + 1][x + 1][0] == 'w':
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, 0, -1, 1, board_map)
+      if board_map[y + 1][x - 1][0] == 'w':
+        actual_pawn_move += self.checkAroundEachEachDirection(x, y, -1, 1, 1, board_map)
     return actual_pawn_move
 
   def rookMove(self, board_map):
@@ -114,13 +121,11 @@ class Move:
     
 
   def queenMove(self, board_map):
-    # basic queen move
     actual_queen_move = self.rookMove(board_map) + self.bishopMove(board_map)
     return actual_queen_move
     
 
   def kingMove(self, board_map):
-    # basic king move
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
     actual_king_move = self.checkAroundEachEachDirection(x, y, 1, 0, 1, board_map) +\
@@ -132,4 +137,7 @@ class Move:
     self.checkAroundEachEachDirection(x, y, -1, 1, 1, board_map) +\
     self.checkAroundEachEachDirection(x, y, -1, -1, 1, board_map)
     return actual_king_move
+
+  def queenCastle(self, last_line):
+    pass
     
