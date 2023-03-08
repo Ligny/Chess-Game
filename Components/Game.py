@@ -5,6 +5,7 @@ from Components.Move import Move
 from Components.Selection import Selection
 
 from enum import Enum
+from array import array
 
 class GameState(Enum):
   QUIT = 0
@@ -28,6 +29,41 @@ class Game:
     self._gameState = GameState.BASIC
     self._move: Move = Move()
     self.animateMove = False
+    self.check = False
+    self.checkMate = False
+
+
+  def checkOrCheckMate(self):
+    all_enemy_move: array[Selection] = []
+    list_king_move: array[Selection] = []
+    enemy_char: str = "b" if self._isWhiteTurn else "w"
+    color_char: str = "w" if self._isWhiteTurn else "b"
+    for y in range(8):
+      for x in range(8):
+        piece = self.board._map[y][x]
+        if piece == str(color_char + "K"):
+          print("my king position: ", x, y)
+          my_king_position = [x, y]
+          self._move._currentMove = [Selection(x, y, piece)]
+          self._move.regularMove(self.board._map)
+          list_king_move = self._move._possibleMove
+          self._move._possibleMove = []
+          self._move._currentMove = []
+        if piece[0] == enemy_char:
+          self._move._currentMove = [Selection(x, y, piece)]
+          self._move.regularMove(self.board._map)
+          all_enemy_move += self._move._possibleMove
+          self._move._possibleMove = []
+          self._move._currentMove = []
+    
+    for move in all_enemy_move:
+      for king_move in list_king_move:
+        if (move._x == king_move._x and move._y == king_move._y):
+          list_king_move.remove(king_move)
+
+    print("possible move for king", list_king_move.__len__())
+    if list_king_move.__len__() == 1:
+      self.checkMate = True
 
   def drawElements(self):
     self.board.drawBoard(self.screen)
@@ -59,7 +95,7 @@ class Game:
       self._gameState = GameState.BASIC
       self._move._currentMove = []
       self._move._possibleMove = []
-    
+
   def updateMove(self):
     if self._gameState == GameState.SELECT_PIECE:
       if self._move._possibleMove.__len__() == 0:
@@ -73,6 +109,7 @@ class Game:
       self._move._currentMove = []
       self._move._possibleMove = []
       self._isWhiteTurn = not self._isWhiteTurn
+      # self.checkOrCheckMate()
       self._gameState = GameState.BASIC
 
   def eventHandler(self):
