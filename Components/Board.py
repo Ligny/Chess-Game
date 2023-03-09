@@ -4,9 +4,15 @@ from Components.Selection import Selection
 
 from array import array
 
+'''
+Get chess notation
+'''
 def notation(x: int, y: int) -> str:
   return chr(x + 97) + str(8 - y)
 
+'''
+Class used to manage the board
+'''
 class Board:
   def __init__(self, width: int, height: int) -> None:
     self._map = [
@@ -36,12 +42,18 @@ class Board:
     self.move_log_text: array[str] = []
     self.loadImages()
 
+  '''
+  Load all images from the pieces: images/
+  '''
   def loadImages(self) -> None:
     self.images = {}
     pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for piece in pieces:
       self.images[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (self._square_size, self._square_size))
 
+  '''
+  Draw the board Array
+  '''
   def drawBoard(self, screen: p.Surface) -> None:
     global colors
     colors = [p.Color(235,236,208,255), p.Color(119,149,86,255)]
@@ -50,6 +62,9 @@ class Board:
         color = colors[((row + column) % 2)]
         p.draw.rect(screen, color, p.Rect(column * self._square_size, row * self._square_size, self._square_size, self._square_size))
   
+  '''
+  Draw Move Log pannel & Move log text
+  '''
   def drawMoveLog(self, screen: p.Surface, move_log, font) -> None:
     move_log_rect = p.Rect(self._width, 0, self._square_size, self._square_size)
     p.draw.rect(screen, p.Color('black'), move_log_rect)
@@ -76,6 +91,9 @@ class Board:
     add_new_move_log_text()
     draw_all_move_log(4, 5, 2)
 
+  '''
+  Draw all pieces on the board
+  '''
   def drawPieces(self, screen: p.Surface) -> None:
     for row in range(self._dimension):
       for column in range(self._dimension):
@@ -83,6 +101,9 @@ class Board:
         if piece != "--":
           screen.blit(self.images[piece], p.Rect(column * self._square_size, row * self._square_size, self._square_size, self._square_size))
 
+  '''
+  Highlight the last move
+  '''
   def drawHighlightLastMove(self, screen: p.Surface, move_log) -> None:
     if move_log.__len__() > 0:
       last_move = move_log[-1]
@@ -91,6 +112,9 @@ class Board:
       s.fill(p.Color('green'))
       screen.blit(s, (last_move[1]._x * self._square_size, last_move[1]._y * self._square_size))
 
+  '''
+  Highlight the selected piece & valid moves
+  '''
   def drawHighlightValidMoves(self, screen: p.Surface, actual_move: Selection, move_list) -> None:
     s = p.Surface((self._square_size, self._square_size))
     s.set_alpha(100)
@@ -103,6 +127,9 @@ class Board:
       s.fill(p.Color('yellow'))
       screen.blit(s, (move._x * self._square_size, move._y * self._square_size))
 
+  '''
+  Draw animation on move
+  '''
   def drawAnimateMove(self, screen: p.Surface, move, clock) -> None:
     global colors
     d_col = move[1]._x - move[0]._x

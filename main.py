@@ -2,6 +2,9 @@ import sys
 
 from Components.Game import Game
 
+'''
+Entry point
+'''
 def main():
   try:
     game: Game = Game(512, 512)

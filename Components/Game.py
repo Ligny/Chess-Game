@@ -7,6 +7,9 @@ from Components.Selection import Selection
 from enum import Enum
 from array import array
 
+'''
+State of each turn of the game
+'''
 class GameState(Enum):
   QUIT = 0
   BASIC = 1
@@ -14,7 +17,14 @@ class GameState(Enum):
   MOVE = 3
   UNDO_MOVE = 4
 
+
+'''
+Main class of the game
+'''
 class Game:
+  '''
+  Constructor
+  '''
   def __init__(self, width, height) -> None:
     # pygame init
     p.init()
@@ -29,52 +39,27 @@ class Game:
     self._gameState = GameState.BASIC
     self._move: Move = Move()
     self.animateMove = False
-    self.check = False
-    self.checkMate = False
 
-
-  def checkOrCheckMate(self):
-    all_enemy_move: array[Selection] = []
-    list_king_move: array[Selection] = []
-    enemy_char: str = "b" if self._isWhiteTurn else "w"
-    color_char: str = "w" if self._isWhiteTurn else "b"
-    for y in range(8):
-      for x in range(8):
-        piece = self.board._map[y][x]
-        if piece == str(color_char + "K"):
-          print("my king position: ", x, y)
-          my_king_position = [x, y]
-          self._move._currentMove = [Selection(x, y, piece)]
-          self._move.regularMove(self.board._map)
-          list_king_move = self._move._possibleMove
-          self._move._possibleMove = []
-          self._move._currentMove = []
-        if piece[0] == enemy_char:
-          self._move._currentMove = [Selection(x, y, piece)]
-          self._move.regularMove(self.board._map)
-          all_enemy_move += self._move._possibleMove
-          self._move._possibleMove = []
-          self._move._currentMove = []
-    
-    for move in all_enemy_move:
-      for king_move in list_king_move:
-        if (move._x == king_move._x and move._y == king_move._y):
-          list_king_move.remove(king_move)
-
-    print("possible move for king", list_king_move.__len__())
-    if list_king_move.__len__() == 1:
-      self.checkMate = True
-
+  '''
+  Draw all elements on the screen
+  '''
   def drawElements(self):
     self.board.drawBoard(self.screen)
     self.board.drawMoveLog(self.screen, self._move._moveLog, self.font)
     self.board.drawHighlightLastMove(self.screen, self._move._moveLog)
     self.board.drawPieces(self.screen)
 
+  '''
+  Update the game state to quit the game loop
+  '''
   def updateQuit(self):
     if self._gameState == GameState.QUIT:
       self._running = False
 
+  '''
+  Update the game state to undo the last move
+  Get last move from the move log
+  '''
   def updateUndoMove(self):
     if self._gameState == GameState.UNDO_MOVE and self._move._moveLog.__len__() > 0:
       self._move._currentMove = []
@@ -85,6 +70,9 @@ class Game:
       self._isWhiteTurn = not self._isWhiteTurn
       self._gameState = GameState.BASIC
 
+  '''
+  Verify if the mouse selection is valid
+  '''
   def updateStateInputCheck(self):
     id_move = self._move._currentMove.__len__() - 1
     if self._gameState == GameState.SELECT_PIECE and not self._move._currentMove[id_move - 1].verifySelection(self._isWhiteTurn):
@@ -96,6 +84,9 @@ class Game:
       self._move._currentMove = []
       self._move._possibleMove = []
 
+  '''
+  Update the game state to move the piece
+  '''
   def updateMove(self):
     if self._gameState == GameState.SELECT_PIECE:
       if self._move._possibleMove.__len__() == 0:
@@ -109,9 +100,12 @@ class Game:
       self._move._currentMove = []
       self._move._possibleMove = []
       self._isWhiteTurn = not self._isWhiteTurn
-      # self.checkOrCheckMate()
       self._gameState = GameState.BASIC
 
+  '''
+  Handle all events
+  change the game state according to the event
+  '''
   def eventHandler(self):
     for event in p.event.get():
       if event.type == p.QUIT:
@@ -131,12 +125,18 @@ class Game:
         elif self._gameState == GameState.SELECT_PIECE:
           self._gameState = GameState.MOVE
 
+  '''
+  Update all elements
+  '''
   def update(self):
     self.updateQuit()
     self.updateUndoMove()
     self.updateStateInputCheck()
     self.updateMove()
 
+  '''
+  Main game loop
+  '''
   def gameLoop(self):
     while self._running:
       self.drawElements()

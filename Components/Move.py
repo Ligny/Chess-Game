@@ -2,6 +2,9 @@ from Components.Selection import Selection
 
 from array import array
 
+'''
+Class to manage the move of the pieces
+'''
 class Move:
   def __init__(self) -> None:
     self._moveLog: array[array[Selection, Selection]] = []
@@ -16,12 +19,18 @@ class Move:
       "K": self.kingMove
     }
 
+  '''
+  Verify if the move is possible
+  '''
   def isPossibleMove(self) -> bool:
     for move in self._possibleMove:
       if move._x == self._currentMove[1]._x and move._y == self._currentMove[1]._y:
         return True
     return False
 
+  '''
+  Get all move(s) possible in a direction
+  '''
   def checkAroundEachEachDirection(self, x, y, x_offset, y_offset, times, board_map):
     actual_move: array[Selection] = []
     i = 0
@@ -50,10 +59,15 @@ class Move:
 
     return actual_move
 
+  '''
+  Get all possible move for a piece
+  '''
   def regularMove(self, board_map):
     self._possibleMove = self._arrayPointer[self._currentMove[0]._caseSelected[1]](board_map)
 
-
+  '''
+  Get all possible move for a pawn
+  '''
   def pawnMove(self, board_map):
     actual_pawn_move: array[Selection] = []
     x = self._currentMove[0]._x
@@ -79,6 +93,9 @@ class Move:
         actual_pawn_move += self.checkAroundEachEachDirection(x, y, -1, 1, 1, board_map)
     return actual_pawn_move
 
+  '''
+  Get all possible move for a rook
+  '''
   def rookMove(self, board_map):
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
@@ -89,6 +106,9 @@ class Move:
     self.checkAroundEachEachDirection(x, y, 0, -1, -1, board_map)
     return actual_rook_move
 
+  '''
+  Get all possible move for a bishop
+  '''
   def bishopMove(self, board_map):
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y
@@ -99,7 +119,9 @@ class Move:
     self.checkAroundEachEachDirection(x, y, -1, -1, -1, board_map)
     return actual_bishop_move
     
-
+  '''
+  Get all possible move for a knight
+  '''
   def knightMove(self, board_map):
     actual_knight_move: array[Selection] = []
     x = self._currentMove[0]._x
@@ -119,12 +141,16 @@ class Move:
     checkKnightMove(x - 2, y - 1)
     return actual_knight_move
     
-
+  '''
+  Get all possible move for a queen
+  '''
   def queenMove(self, board_map):
     actual_queen_move = self.rookMove(board_map) + self.bishopMove(board_map)
     return actual_queen_move
     
-
+  '''
+  Get all possible move for a king
+  '''
   def kingMove(self, board_map):
     x = self._currentMove[0]._x
     y = self._currentMove[0]._y

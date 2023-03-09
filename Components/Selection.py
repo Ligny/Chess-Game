@@ -1,3 +1,6 @@
+'''
+This class represents a selection of a case on the board.
+'''
 class Selection:
   def __init__(self, x: int, y: int, case: str) -> None:
     self._x = x
