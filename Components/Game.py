@@ -40,6 +40,8 @@ class Game:
     self._move: Move = Move()
     self.animateMove = False
 
+##################################################################
+
   '''
   Update the game state to quit the game loop
   '''
@@ -116,9 +118,18 @@ class Game:
       CastleMove(checkCastleMove) if abs(checkCastleMove) == 2 else basicMove()
       self._isWhiteTurn = not self._isWhiteTurn
       self._gameState = GameState.QUIT if self._move._currentMove[1]._caseSelected[1] == 'K' else GameState.BASIC
-      # self._gameState = GameState.BASIC
       self._move._currentMove = []
       self._move._possibleMove = []
+
+  '''
+  Promote the pawn to a queen
+  '''
+  def updatePromotion(self):
+    myColorEndLine = 0 if self._isWhiteTurn else 7
+    for i in range(8):
+      if self.board._map[myColorEndLine][i][1] == 'p':
+        self.board._map[myColorEndLine][i] = self.board._map[myColorEndLine][i][0] + 'Q'
+
 
   '''
   Update all elements
@@ -128,6 +139,7 @@ class Game:
     self.updateUndoMove()
     self.updateStateInputCheck()
     self.updateMove()
+    self.updatePromotion()
 
 ##################################################################
   
