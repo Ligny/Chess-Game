@@ -88,8 +88,6 @@ class Game:
       self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
       self.board.drawAnimateMove(self.screen, self._move._currentMove, self.clock)
       self.board._map[self._move._currentMove[1]._y][self._move._currentMove[1]._x] = self._move._currentMove[0]._caseSelected
-      print(self._move._currentMove[0]._caseSelected)
-      print(self._move._currentMove[1]._caseSelected)
     '''
     Make Castle move
     '''

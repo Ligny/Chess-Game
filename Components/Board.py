@@ -15,25 +15,15 @@ Class used to manage the board
 '''
 class Board:
   def __init__(self, width: int, height: int) -> None:
-    # self._map = [
-    #   ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
-    #   ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-    #   ["--", "--", "--", "--", "--", "--", "--", "--"],
-    #   ["--", "--", "--", "--", "--", "--", "--", "--"],
-    #   ["--", "--", "--", "--", "--", "--", "--", "--"],
-    #   ["--", "--", "--", "--", "--", "--", "--", "--"],
-    #   ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
-    #   ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
-    # ]
     self._map = [
-      ["bR", "--", "--", "--", "bK", "wp", "--", "bR"],
+      ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+      ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
       ["--", "--", "--", "--", "--", "--", "--", "--"],
       ["--", "--", "--", "--", "--", "--", "--", "--"],
       ["--", "--", "--", "--", "--", "--", "--", "--"],
       ["--", "--", "--", "--", "--", "--", "--", "--"],
-      ["--", "--", "--", "--", "--", "--", "--", "--"],
-      ["--", "--", "--", "--", "--", "--", "--", "--"],
-      ["wR", "--", "--", "--", "wK", "--", "--", "wR"],
+      ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+      ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
     ]
     self._width: int = width
     self._height: int = height
@@ -56,7 +46,7 @@ class Board:
   '''
   def drawBoard(self, screen: p.Surface) -> None:
     global colors
-    colors = [p.Color(235,236,208,255), p.Color(119,149,86,255)]
+    colors = [p.Color(235,236,208,255), p.Color(75, 115, 153)]
     for row in range(self._dimension):
       for column in range(self._dimension):
         color = colors[((row + column) % 2)]
@@ -109,7 +99,7 @@ class Board:
       last_move = move_log[-1]
       s = p.Surface((self._square_size, self._square_size))
       s.set_alpha(100)
-      s.fill(p.Color('green'))
+      s.fill(p.Color('yellow'))
       screen.blit(s, (last_move[1]._x * self._square_size, last_move[1]._y * self._square_size))
 
   '''
@@ -124,7 +114,7 @@ class Board:
     for move in move_list:
       s = p.Surface((self._square_size, self._square_size))
       s.set_alpha(100)
-      s.fill(p.Color('yellow'))
+      s.fill(p.Color(116, 199, 232))
       screen.blit(s, (move._x * self._square_size, move._y * self._square_size))
 
   '''
