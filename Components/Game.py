@@ -86,11 +86,12 @@ class Game:
       self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
       self.board.drawAnimateMove(self.screen, self._move._currentMove, self.clock)
       self.board._map[self._move._currentMove[1]._y][self._move._currentMove[1]._x] = self._move._currentMove[0]._caseSelected
+      print(self._move._currentMove[0]._caseSelected)
+      print(self._move._currentMove[1]._caseSelected)
     '''
     Make Castle move
     '''
     def CastleMove(checkCastleMove):
-      print("Castle")
       myY = self._move._currentMove[0]._y
       myColor = self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x][0]
       self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
@@ -113,10 +114,11 @@ class Game:
       self._move._moveLog.append(tuple([self._move._currentMove[0], self._move._currentMove[1]]))
       checkCastleMove = self._move._currentMove[0]._x - self._move._currentMove[1]._x
       CastleMove(checkCastleMove) if abs(checkCastleMove) == 2 else basicMove()
+      self._isWhiteTurn = not self._isWhiteTurn
+      self._gameState = GameState.QUIT if self._move._currentMove[1]._caseSelected[1] == 'K' else GameState.BASIC
+      # self._gameState = GameState.BASIC
       self._move._currentMove = []
       self._move._possibleMove = []
-      self._isWhiteTurn = not self._isWhiteTurn
-      self._gameState = GameState.BASIC
 
   '''
   Update all elements
