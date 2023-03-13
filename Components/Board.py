@@ -39,7 +39,7 @@ class Board:
     self.images = {}
     pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for piece in pieces:
-      self.images[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (self._square_size, self._square_size))
+      self.images[piece] = p.transform.scale(p.image.load("ressources/images/" + piece + ".png"), (self._square_size, self._square_size))
 
   '''
   Draw the board Array
