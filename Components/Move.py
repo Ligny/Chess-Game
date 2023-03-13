@@ -161,9 +161,17 @@ class Move:
     self.checkAroundEachEachDirection(x, y, 1, 1, 1, board_map) +\
     self.checkAroundEachEachDirection(x, y, 1, -1, 1, board_map) +\
     self.checkAroundEachEachDirection(x, y, -1, 1, 1, board_map) +\
-    self.checkAroundEachEachDirection(x, y, -1, -1, 1, board_map)
+    self.checkAroundEachEachDirection(x, y, -1, -1, 1, board_map) +\
+    self.castleKing(board_map[y][4:8], board_map, x, y) +\
+    self.castleQueen(board_map[y][0:5], board_map, x, y)
     return actual_king_move
 
-  def queenCastle(self, last_line):
-    pass
-    
+  def castleKing(self, last_line, board_map, x, y):
+    if last_line == ["wK", "--", "--", "wR"] or last_line == ["bK", "--", "--", "bR"]:
+      return self.checkAroundEachEachDirection(x, y, 2, 0, 1, board_map)
+    return []
+
+  def castleQueen(self, last_line, board_map, x, y):
+    if last_line == ["wR", "--", "--", "--", "wK"] or last_line == ["bR", "--", "--", "--", "bK"]:
+      return self.checkAroundEachEachDirection(x, y, -2, 0, 1, board_map)
+    return []

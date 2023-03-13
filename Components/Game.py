@@ -41,15 +41,6 @@ class Game:
     self.animateMove = False
 
   '''
-  Draw all elements on the screen
-  '''
-  def drawElements(self):
-    self.board.drawBoard(self.screen)
-    self.board.drawMoveLog(self.screen, self._move._moveLog, self.font)
-    self.board.drawHighlightLastMove(self.screen, self._move._moveLog)
-    self.board.drawPieces(self.screen)
-
-  '''
   Update the game state to quit the game loop
   '''
   def updateQuit(self):
@@ -88,20 +79,56 @@ class Game:
   Update the game state to move the piece
   '''
   def updateMove(self):
+    '''
+    Make basic move
+    '''
+    def basicMove():
+      self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
+      self.board.drawAnimateMove(self.screen, self._move._currentMove, self.clock)
+      self.board._map[self._move._currentMove[1]._y][self._move._currentMove[1]._x] = self._move._currentMove[0]._caseSelected
+    '''
+    Make Castle move
+    '''
+    def CastleMove(checkCastleMove):
+      print("Castle")
+      myY = self._move._currentMove[0]._y
+      myColor = self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x][0]
+      self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
+      self.board.drawAnimateMove(self.screen, self._move._currentMove, self.clock)
+      self.board._map[self._move._currentMove[1]._y][self._move._currentMove[1]._x] = self._move._currentMove[0]._caseSelected
+      if checkCastleMove < 0:
+        self._move._currentMove = [Selection(7, myY, myColor + 'R' ), Selection(5, myY, "--")]
+      else:
+        self._move._currentMove = [Selection(0, myY, myColor + 'R'), Selection(3, myY, "--")]
+      self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
+      self.board.drawAnimateMove(self.screen, self._move._currentMove, self.clock)
+      self.board._map[self._move._currentMove[1]._y][self._move._currentMove[1]._x] = self._move._currentMove[0]._caseSelected
+
+
     if self._gameState == GameState.SELECT_PIECE:
       if self._move._possibleMove.__len__() == 0:
         self._move.regularMove(self.board._map)
       self.board.drawHighlightValidMoves(self.screen, self._move._currentMove[0], self._move._possibleMove)
     if self._gameState == GameState.MOVE:
       self._move._moveLog.append(tuple([self._move._currentMove[0], self._move._currentMove[1]]))
-      self.board._map[self._move._currentMove[0]._y][self._move._currentMove[0]._x] = "--"
-      self.board.drawAnimateMove(self.screen, self._move._currentMove, self.clock)
-      self.board._map[self._move._currentMove[1]._y][self._move._currentMove[1]._x] = self._move._currentMove[0]._caseSelected
+      checkCastleMove = self._move._currentMove[0]._x - self._move._currentMove[1]._x
+      CastleMove(checkCastleMove) if abs(checkCastleMove) == 2 else basicMove()
       self._move._currentMove = []
       self._move._possibleMove = []
       self._isWhiteTurn = not self._isWhiteTurn
       self._gameState = GameState.BASIC
 
+  '''
+  Update all elements
+  '''
+  def update(self):
+    self.updateQuit()
+    self.updateUndoMove()
+    self.updateStateInputCheck()
+    self.updateMove()
+
+##################################################################
+  
   '''
   Handle all events
   change the game state according to the event
@@ -125,14 +152,15 @@ class Game:
         elif self._gameState == GameState.SELECT_PIECE:
           self._gameState = GameState.MOVE
 
+  
   '''
-  Update all elements
+  Draw all elements on the screen
   '''
-  def update(self):
-    self.updateQuit()
-    self.updateUndoMove()
-    self.updateStateInputCheck()
-    self.updateMove()
+  def drawElements(self):
+    self.board.drawBoard(self.screen)
+    self.board.drawMoveLog(self.screen, self._move._moveLog, self.font)
+    self.board.drawHighlightLastMove(self.screen, self._move._moveLog)
+    self.board.drawPieces(self.screen)
 
   '''
   Main game loop
